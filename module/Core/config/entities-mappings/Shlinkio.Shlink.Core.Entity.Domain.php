@@ -24,4 +24,19 @@ return static function (ClassMetadata $metadata, array $emConfig): void {
     $builder->createField('authority', Types::STRING)
             ->unique()
             ->build();
+
+    $builder->createField('baseUrlRedirect', Types::STRING)
+            ->columnName('base_url_redirect')
+            ->nullable()
+            ->build();
+
+    $builder->createField('regular404Redirect', Types::STRING)
+            ->columnName('regular_not_found_redirect')
+            ->nullable()
+            ->build();
+
+    $builder->createField('invalidShortUrlRedirect', Types::STRING)
+            ->columnName('invalid_short_url_redirect')
+            ->nullable()
+            ->build();
 };

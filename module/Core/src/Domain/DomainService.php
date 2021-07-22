@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Shlinkio\Shlink\Core\Domain;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Shlinkio\Shlink\Core\Config\NotFoundRedirects;
 use Shlinkio\Shlink\Core\Domain\Model\DomainItem;
 use Shlinkio\Shlink\Core\Domain\Repository\DomainRepositoryInterface;
 use Shlinkio\Shlink\Core\Entity\Domain;
 use Shlinkio\Shlink\Core\Exception\DomainNotFoundException;
+use Shlinkio\Shlink\Core\Options\NotFoundRedirectOptions;
 use Shlinkio\Shlink\Rest\ApiKey\Role;
 use Shlinkio\Shlink\Rest\Entity\ApiKey;
 
@@ -16,8 +18,11 @@ use function Functional\map;
 
 class DomainService implements DomainServiceInterface
 {
-    public function __construct(private EntityManagerInterface $em, private string $defaultDomain)
-    {
+    public function __construct(
+        private EntityManagerInterface $em,
+        private string $defaultDomain,
+        private NotFoundRedirectOptions $redirectOptions,
+    ) {
     }
 
     /**
@@ -28,14 +33,14 @@ class DomainService implements DomainServiceInterface
         /** @var DomainRepositoryInterface $repo */
         $repo = $this->em->getRepository(Domain::class);
         $domains = $repo->findDomainsWithout($this->defaultDomain, $apiKey);
-        $mappedDomains = map($domains, fn (Domain $domain) => new DomainItem($domain->getAuthority(), false));
+        $mappedDomains = map($domains, fn (Domain $domain) => DomainItem::forExistingDomain($domain));
 
         if ($apiKey?->hasRole(Role::DOMAIN_SPECIFIC)) {
             return $mappedDomains;
         }
 
         return [
-            new DomainItem($this->defaultDomain, true),
+            DomainItem::forDefaultDomain($this->defaultDomain, $this->redirectOptions),
             ...$mappedDomains,
         ];
     }
@@ -54,12 +59,27 @@ class DomainService implements DomainServiceInterface
         return $domain;
     }
 
-    public function getOrCreate(string $authority): Domain
+    public function findByAuthority(string $authority): ?Domain
     {
         $repo = $this->em->getRepository(Domain::class);
-        $domain = $repo->findOneBy(['authority' => $authority]) ?? new Domain($authority);
+        return $repo->findOneBy(['authority' => $authority]);
+    }
+
+    public function getOrCreate(string $authority): Domain
+    {
+        $domain = $this->findByAuthority($authority) ?? new Domain($authority);
 
         $this->em->persist($domain);
+        $this->em->flush();
+
+        return $domain;
+    }
+
+    public function configureNotFoundRedirects(string $authority, NotFoundRedirects $notFoundRedirects): Domain
+    {
+        $domain = $this->getOrCreate($authority);
+        $domain->configureNotFoundRedirects($notFoundRedirects);
+
         $this->em->flush();
 
         return $domain;

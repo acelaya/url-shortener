@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
+$isSwoole = extension_loaded('swoole');
+
 return [
 
     'url_shortener' => [
         'domain' => [
             'schema' => 'http',
-            'hostname' => 'localhost:8080',
+            'hostname' => sprintf('localhost:%s', $isSwoole ? '8080' : '8000'),
         ],
+        'auto_resolve_titles' => true,
     ],
 
 ];

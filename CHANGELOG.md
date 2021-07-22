@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com), and this 
 
     This behavior needs to be actively opted in, via installer config options or env vars.
 
+* [#943](https://github.com/shlinkio/shlink/issues/943) Added support to define different "not-found" redirects for every domain handled by Shlink.
+
+    Shlink will continue to allow defining the default values via env vars or config, but afterwards, you can use the `domain:redirects` command to define specific values for every single domain.
+
 ### Changed
 * [#1118](https://github.com/shlinkio/shlink/issues/1118) Increased phpstan required level to 8.
 

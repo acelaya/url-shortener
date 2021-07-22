@@ -27,6 +27,7 @@ return [
             Command\Tag\DeleteTagsCommand::NAME => Command\Tag\DeleteTagsCommand::class,
 
             Command\Domain\ListDomainsCommand::NAME => Command\Domain\ListDomainsCommand::class,
+            Command\Domain\DomainRedirectsCommand::NAME => Command\Domain\DomainRedirectsCommand::class,
 
             Command\Db\CreateDatabaseCommand::NAME => Command\Db\CreateDatabaseCommand::class,
             Command\Db\MigrateDatabaseCommand::NAME => Command\Db\MigrateDatabaseCommand::class,

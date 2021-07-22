@@ -61,6 +61,7 @@ return [
             Command\Db\MigrateDatabaseCommand::class => ConfigAbstractFactory::class,
 
             Command\Domain\ListDomainsCommand::class => ConfigAbstractFactory::class,
+            Command\Domain\DomainRedirectsCommand::class => ConfigAbstractFactory::class,
         ],
     ],
 
@@ -104,6 +105,7 @@ return [
         Command\Tag\DeleteTagsCommand::class => [TagService::class],
 
         Command\Domain\ListDomainsCommand::class => [DomainService::class],
+        Command\Domain\DomainRedirectsCommand::class => [DomainService::class],
 
         Command\Db\CreateDatabaseCommand::class => [
             LockFactory::class,

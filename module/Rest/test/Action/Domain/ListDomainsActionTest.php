@@ -11,6 +11,8 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use Shlinkio\Shlink\Core\Domain\DomainServiceInterface;
 use Shlinkio\Shlink\Core\Domain\Model\DomainItem;
+use Shlinkio\Shlink\Core\Entity\Domain;
+use Shlinkio\Shlink\Core\Options\NotFoundRedirectOptions;
 use Shlinkio\Shlink\Rest\Action\Domain\ListDomainsAction;
 use Shlinkio\Shlink\Rest\Entity\ApiKey;
 
@@ -32,8 +34,8 @@ class ListDomainsActionTest extends TestCase
     {
         $apiKey = ApiKey::create();
         $domains = [
-            new DomainItem('bar.com', true),
-            new DomainItem('baz.com', false),
+            DomainItem::forDefaultDomain('bar.com', new NotFoundRedirectOptions()),
+            DomainItem::forExistingDomain(new Domain('baz.com')),
         ];
         $listDomains = $this->domainService->listDomains($apiKey)->willReturn($domains);
 
